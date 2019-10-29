@@ -1,26 +1,83 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React,{ Component } from 'react';
+import axios from 'axios'
+import Loading from './Loading';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component{
+
+  constructor(props){
+    super(props)
+
+    this.state = {
+      users: [],
+      isLoading: false
+    }
+    this.buttonClicked = this.buttonClicked.bind(this);
+
+  }
+
+  getUsers()
+  {
+
+    this.setState({
+
+      isLoading:true
+
+    });
+
+    axios.get('https://randomuser.me/api/?results=5')
+    .then((response) =>{
+
+      //console.log(response);
+      this.setState({
+
+        users:response.data.results,
+        isLoading:false
+
+      });
+
+    })
+    .catch((error)=>{
+
+      console.log(error);
+
+    });
+  }
+
+  componentDidMount()
+  {
+
+    this.getUsers();
+
+  }
+
+  buttonClicked(){
+    alert("Yoo");
+  }
+
+ 
+  render() {
+
+    return (
+      <div className="App">
+        { !this.state.isLoading ?
+          this.state.users.map( (user) => (
+          <div key={user.id.value}>
+            <h1>{user.name.first}</h1>
+            <p>{user.cell}</p>
+            <form>
+              <input type="button" value="Click me" onClick={this.buttonClicked}/>
+            </form>
+
+            <hr/>
+          </div>
+        )): <Loading message = "It's Loading "/> }
+
+       
+      </div>
+    );
+
+  }
+
 }
 
 export default App;
